@@ -1,39 +1,47 @@
 'use client';
 
 import React, { useState, DragEvent, FocusEvent, useRef, useEffect, ChangeEvent } from 'react';
-import { FaDesktop, FaTabletAlt, FaMobileAlt, FaTrash, FaSave, FaUpload, FaCog } from 'react-icons/fa';
+import { FaDesktop, FaTabletAlt, FaMobileAlt, FaTrash, FaSave, FaUpload, FaCog, FaCode, FaAlignLeft, FaAlignCenter, FaAlignRight } from 'react-icons/fa';
+import { MdTextFields, MdImage, MdSmartButton, MdViewColumn } from 'react-icons/md';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-type ComponentType = 'header' | 'paragraph' | 'image' | 'button' | 'layout';
+type ComponentType = 'text' | 'image' | 'button' | 'columns';
 
 interface Component {
   id: string;
   name: string;
   type: ComponentType;
+  icon: React.ReactNode;
   styles: Record<string, string>;
   content: Record<string, string | Component[]>;
+  textStyle?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+  bold?: boolean;
+  italic?: boolean;
+  underline?: boolean;
+  strikethrough?: boolean;
+  textAlign?: 'left' | 'center' | 'right';
 }
 
 const initialComponents: Component[] = [
   {
-    id: 'header',
-    name: 'Header',
-    type: 'header',
-    styles: { fontSize: '24px', fontWeight: 'bold' },
-    content: { text: 'Header' }
-  },
-  {
-    id: 'paragraph',
-    name: 'Paragraph',
-    type: 'paragraph',
-    styles: { fontSize: '16px' },
-    content: { text: 'This is a paragraph.' }
+    id: 'text',
+    name: 'Text',
+    type: 'text',
+    icon: <MdTextFields />,
+    styles: { fontSize: '16px', color: '#000000' },
+    content: { text: 'Edit this text' },
+    textStyle: 'normal',
+    bold: false,
+    italic: false,
+    underline: false,
+    strikethrough: false,
   },
   {
     id: 'image',
     name: 'Image',
     type: 'image',
+    icon: <MdImage />,
     styles: { width: '100%' },
     content: { src: 'https://via.placeholder.com/150', alt: 'Placeholder' }
   },
@@ -41,13 +49,15 @@ const initialComponents: Component[] = [
     id: 'button',
     name: 'Button',
     type: 'button',
+    icon: <MdSmartButton />,
     styles: { backgroundColor: '#3B82F6', color: 'white', padding: '8px 16px', borderRadius: '4px' },
     content: { text: 'Click me' }
   },
   {
-    id: 'layout',
-    name: 'Layout',
-    type: 'layout',
+    id: 'columns',
+    name: 'Columns',
+    type: 'columns',
+    icon: <MdViewColumn />,
     styles: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' },
     content: { columns: '2', children: [] }
   }
@@ -88,8 +98,6 @@ export default function Builder() {
     setDraggedOver(null);
   };
 
-
-
   const handleDelete = (id: string) => {
     setDroppedComponents(components => {
       const deleteComponent = (comps: Component[]): Component[] => {
@@ -97,7 +105,7 @@ export default function Builder() {
           if (comp.id === id) {
             return acc;
           }
-          if (comp.type === 'layout') {
+          if (comp.type === 'columns') {
             return [...acc, {
               ...comp,
               content: {
@@ -113,12 +121,26 @@ export default function Builder() {
     });
   };
 
-  const handleContentChange = (id: string, newContent: Record<string, string>) => {
-    setDroppedComponents(components =>
-      components.map(component =>
-        component.id === id ? { ...component, content: newContent } : component
-      )
-    );
+  const handleContentChange = (id: string, newContent: Record<string, string>, parentId?: string) => {
+    setDroppedComponents(components => {
+      const updateComponent = (comp: Component): Component => {
+        if (comp.id === id) {
+          return { ...comp, content: { ...comp.content, ...newContent } };
+        }
+        if (comp.type === 'columns' && comp.content.children) {
+          return {
+            ...comp,
+            content: {
+              ...comp.content,
+              children: (comp.content.children as Component[]).map(updateComponent)
+            }
+          };
+        }
+        return comp;
+      };
+
+      return components.map(updateComponent);
+    });
   };
 
   const autoResize = (element: HTMLTextAreaElement | HTMLInputElement) => {
@@ -155,41 +177,29 @@ export default function Builder() {
     );
   };
 
-  const TextSettingsOverlay = ({ id, styles }: { id: string; styles: TextSettings }) => (
-    <div className="absolute top-full left-0 mt-2 p-2 bg-white border border-gray-300 rounded shadow-lg z-10">
-      <div className="mb-2">
-        <label className="block text-sm font-bold mb-1">Font Size</label>
-        <input
-          type="number"
-          value={parseInt(styles.fontSize)}
-          onChange={(e) => handleStyleChange(id, { fontSize: `${e.target.value}px` })}
-          className="w-full p-1 border rounded"
-        />
-      </div>
-      <div className="mb-2">
-        <label className="block text-sm font-bold mb-1">Color</label>
-        <input
-          type="color"
-          value={styles.color}
-          onChange={(e) => handleStyleChange(id, { color: e.target.value })}
-          className="w-full p-1 border rounded"
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-bold mb-1">Font Weight</label>
-        <select
-          value={styles.fontWeight}
-          onChange={(e) => handleStyleChange(id, { fontWeight: e.target.value })}
-          className="w-full p-1 border rounded"
-        >
-          <option value="normal">Normal</option>
-          <option value="bold">Bold</option>
-        </select>
-      </div>
-    </div>
-  );
+  const handleTextStyleChange = (id: string, changes: Partial<Component>) => {
+    setDroppedComponents(components => {
+      const updateComponent = (comp: Component): Component => {
+        if (comp.id === id) {
+          return { ...comp, ...changes };
+        }
+        if (comp.type === 'columns' && comp.content.children) {
+          return {
+            ...comp,
+            content: {
+              ...comp.content,
+              children: (comp.content.children as Component[]).map(updateComponent)
+            }
+          };
+        }
+        return comp;
+      };
 
-  const handleLayoutChange = (id: string, newColumns: string) => {
+      return components.map(updateComponent);
+    });
+  };
+
+  const handleColumnsChange = (id: string, newColumns: string) => {
     setDroppedComponents(components =>
       components.map(component =>
         component.id === id
@@ -203,7 +213,7 @@ export default function Builder() {
     );
   };
 
-  const LayoutSettingsOverlay = ({ id, columns }: { id: string; columns: string }) => (
+  const ColumnsSettingsOverlay = ({ id, columns }: { id: string; columns: string }) => (
     <div className="absolute top-full left-0 mt-2 p-2 bg-white border border-gray-300 rounded shadow-lg z-10">
       <div className="mb-2">
         <label className="block text-sm font-bold mb-1">Columns</label>
@@ -212,7 +222,7 @@ export default function Builder() {
           min="1"
           max="4"
           value={columns}
-          onChange={(e) => handleLayoutChange(id, e.target.value)}
+          onChange={(e) => handleColumnsChange(id, e.target.value)}
           className="w-full p-1 border rounded"
         />
       </div>
@@ -238,7 +248,7 @@ export default function Builder() {
               }
             };
           }
-          if (comp.type === 'layout') {
+          if (comp.type === 'columns') {
             return {
               ...comp,
               content: {
@@ -255,28 +265,34 @@ export default function Builder() {
     });
   };
 
-  const renderComponent = (component: Component) => {
+  const renderComponent = (component: Component, isInColumn: boolean = false) => {
     const ComponentWrapper = ({ children }: { children: React.ReactNode }) => (
-      <div className="relative group">
-        <div className="absolute top-0 right-0 p-1 bg-white rounded-bl hidden group-hover:flex space-x-2">
+      <div className={`relative group ${isInColumn ? 'w-full' : ''}`}>
+        <div className="absolute top-0 right-0 p-1 bg-white rounded-bl hidden group-hover:flex space-x-2 z-10">
           <FaCog
             className="text-blue-500 cursor-pointer"
-            onClick={() => setActiveSettings(activeSettings === component.id ? null : component.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setActiveSettings(activeSettings === component.id ? null : component.id);
+            }}
           />
           <FaTrash
             className="text-red-500 cursor-pointer"
-            onClick={() => handleDelete(component.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDelete(component.id);
+            }}
           />
         </div>
-        <div className="border-2 border-transparent group-hover:border-blue-500 p-2">
+        <div className={`border-2 border-transparent group-hover:border-blue-500 p-2 ${isInColumn ? 'h-full' : ''}`}>
           {children}
         </div>
         {activeSettings === component.id && (
-          component.type === 'layout' 
-            ? <LayoutSettingsOverlay id={component.id} columns={component.content.columns as string} />
-            : ['header', 'paragraph', 'button'].includes(component.type) && (
-                <TextSettingsOverlay id={component.id} styles={component.styles as TextSettings} />
-              )
+          component.type === 'text' 
+            ? <TextSettingsOverlay id={component.id} component={component} />
+            : component.type === 'columns'
+            ? <ColumnsSettingsOverlay id={component.id} columns={component.content.columns as string} />
+            : null
         )}
       </div>
     );
@@ -291,24 +307,46 @@ export default function Builder() {
     };
 
     switch (component.type) {
-      case 'header':
-      case 'paragraph':
+      case 'text':
+        const TextComponent = component.textStyle === 'normal' ? 'p' : component.textStyle;
+        return (
+          <ComponentWrapper key={component.id}>
+            <TextComponent
+              style={{
+                ...component.styles,
+                fontWeight: component.bold ? 'bold' : 'normal',
+                fontStyle: component.italic ? 'italic' : 'normal',
+                textDecoration: `${component.underline ? 'underline' : ''} ${component.strikethrough ? 'line-through' : ''}`.trim(),
+                height: isInColumn ? '100%' : 'auto',
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: component.textAlign === 'center' ? 'center' : 
+                                component.textAlign === 'right' ? 'flex-end' : 'flex-start',
+                textAlign: component.textAlign || 'left',
+              }}
+              contentEditable
+              suppressContentEditableWarning
+              onBlur={(e) => handleContentChange(component.id, { text: e.currentTarget.textContent || '' })}
+              className="outline-none"
+            >
+              {component.content.text}
+            </TextComponent>
+          </ComponentWrapper>
+        );
       case 'button':
-        const Element = component.type === 'paragraph' ? 'textarea' : 'input';
+        const Element = component.type === 'button' ? 'textarea' : 'input';
         return (
           <ComponentWrapper key={component.id}>
             <Element
-              ref={el => {
-                (component.type === 'paragraph' ? textareaRefs : inputRefs).current[component.id] = el;
-                if (el) autoResize(el);
-              }}
-              type={component.type === 'button' ? 'text' : undefined}
-              defaultValue={typeof component.content.text === 'string' ? component.content.text : ''}
+              ref={inputRefs.current[component.id]}
+              type={'text'}
+              defaultValue={component.content.text}
               onBlur={handleBlur}
               onInput={handleInput}
               style={component.styles}
-              className={`w-full bg-transparent ${component.type === 'paragraph' ? 'resize-none' : ''} overflow-hidden`}
-              rows={component.type === 'paragraph' ? 1 : undefined}
+              className={`w-full bg-transparent overflow-hidden`}
+              rows={undefined}
             />
           </ComponentWrapper>
         );
@@ -338,12 +376,13 @@ export default function Builder() {
             </div>
           </ComponentWrapper>
         );
-      case 'layout':
+      case 'columns':
+        const columnCount = parseInt(component.content.columns as string) || 2;
         return (
           <ComponentWrapper key={component.id}>
             <div 
               style={component.styles} 
-              className={`grid min-h-[100px] transition-colors duration-200 ${
+              className={`min-h-[100px] h-full transition-colors duration-200 ${
                 draggedOver === component.id 
                   ? 'border-2 border-blue-500 bg-blue-100' 
                   : 'border-2 border-dashed border-gray-300'
@@ -364,17 +403,104 @@ export default function Builder() {
                 handleDrop(e, component.id);
               }}
             >
-              {(component.content.children as Component[]).map(renderComponent)}
-              {(component.content.children as Component[]).length === 0 && (
-                <div className="col-span-full h-full flex items-center justify-center text-gray-400">
-                  Drag components here
+              {Array.from({ length: columnCount }).map((_, index) => (
+                <div key={index} className="h-full flex items-center justify-center">
+                  {((component.content.children as Component[])[index]) ? 
+                    renderComponent((component.content.children as Component[])[index], true) : 
+                    <div className="text-gray-400 h-full w-full flex items-center justify-center">Drag components here</div>
+                  }
                 </div>
-              )}
+              ))}
             </div>
           </ComponentWrapper>
         );
     }
   };
+
+  const TextSettingsOverlay = ({ id, component }: { id: string; component: Component }) => (
+    <div className="absolute top-full left-0 mt-2 p-2 bg-white border border-gray-300 rounded shadow-lg z-10">
+      <div className="mb-2">
+        <label className="block text-sm font-bold mb-1">Style</label>
+        <select
+          value={component.textStyle}
+          onChange={(e) => handleTextStyleChange(id, { textStyle: e.target.value as Component['textStyle'] })}
+          className="w-full p-1 border rounded"
+        >
+          <option value="normal">Normal</option>
+          <option value="h1">H1</option>
+          <option value="h2">H2</option>
+          <option value="h3">H3</option>
+          <option value="h4">H4</option>
+          <option value="h5">H5</option>
+          <option value="h6">H6</option>
+        </select>
+      </div>
+      <div className="mb-2">
+        <label className="block text-sm font-bold mb-1">Font Size</label>
+        <input
+          type="number"
+          value={parseInt(component.styles.fontSize)}
+          onChange={(e) => handleTextStyleChange(id, { styles: { ...component.styles, fontSize: `${e.target.value}px` } })}
+          className="w-full p-1 border rounded"
+        />
+      </div>
+      <div className="mb-2">
+        <label className="block text-sm font-bold mb-1">Color</label>
+        <input
+          type="color"
+          value={component.styles.color}
+          onChange={(e) => handleTextStyleChange(id, { styles: { ...component.styles, color: e.target.value } })}
+          className="w-full p-1 border rounded"
+        />
+      </div>
+      <div className="flex space-x-2 mb-2">
+        <button
+          onClick={() => handleTextStyleChange(id, { bold: !component.bold })}
+          className={`p-1 border rounded ${component.bold ? 'bg-blue-500 text-white' : ''}`}
+        >
+          B
+        </button>
+        <button
+          onClick={() => handleTextStyleChange(id, { italic: !component.italic })}
+          className={`p-1 border rounded ${component.italic ? 'bg-blue-500 text-white' : ''}`}
+        >
+          I
+        </button>
+        <button
+          onClick={() => handleTextStyleChange(id, { underline: !component.underline })}
+          className={`p-1 border rounded ${component.underline ? 'bg-blue-500 text-white' : ''}`}
+        >
+          U
+        </button>
+        <button
+          onClick={() => handleTextStyleChange(id, { strikethrough: !component.strikethrough })}
+          className={`p-1 border rounded ${component.strikethrough ? 'bg-blue-500 text-white' : ''}`}
+        >
+          S
+        </button>
+      </div>
+      <div className="flex space-x-2 mb-2">
+        <button
+          onClick={() => handleTextStyleChange(id, { textAlign: 'left' })}
+          className={`p-1 border rounded ${component.textAlign === 'left' ? 'bg-blue-500 text-white' : ''}`}
+        >
+          <FaAlignLeft />
+        </button>
+        <button
+          onClick={() => handleTextStyleChange(id, { textAlign: 'center' })}
+          className={`p-1 border rounded ${component.textAlign === 'center' ? 'bg-blue-500 text-white' : ''}`}
+        >
+          <FaAlignCenter />
+        </button>
+        <button
+          onClick={() => handleTextStyleChange(id, { textAlign: 'right' })}
+          className={`p-1 border rounded ${component.textAlign === 'right' ? 'bg-blue-500 text-white' : ''}`}
+        >
+          <FaAlignRight />
+        </button>
+      </div>
+    </div>
+  );
 
   
 
@@ -383,6 +509,80 @@ export default function Builder() {
     localStorage.setItem('savedPage', pageData);
     console.log(pageData);
     toast.success('Page saved successfully!', {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    });
+  };
+
+  const generateHTML = (components: Component[]): string => {
+    const componentToHTML = (component: Component): string => {
+      switch (component.type) {
+        case 'text':
+          const tag = component.textStyle === 'normal' ? 'p' : component.textStyle;
+          const style = {
+            ...component.styles,
+            fontWeight: component.bold ? 'bold' : 'normal',
+            fontStyle: component.italic ? 'italic' : 'normal',
+            textDecoration: `${component.underline ? 'underline' : ''} ${component.strikethrough ? 'line-through' : ''}`.trim(),
+            textAlign: component.textAlign || 'left',
+          };
+          return `<${tag} style="${styleObjectToString(style)}">${component.content.text}</${tag}>`;
+        case 'button':
+          return `<button style="${styleObjectToString(component.styles)}">${component.content.text}</button>`;
+        case 'image':
+          return `<img src="${component.content.src}" alt="${component.content.alt}" style="${styleObjectToString(component.styles)}" />`;
+        case 'columns':
+          const childrenHTML = (component.content.children as Component[]).map(componentToHTML).join('');
+          return `<div style="${styleObjectToString(component.styles)}">${childrenHTML}</div>`;
+        default:
+          return '';
+      }
+    };
+
+    return components.map(componentToHTML).join('');
+  };
+
+  const styleObjectToString = (styles: Record<string, string>): string => {
+    return Object.entries(styles).map(([key, value]) => `${key}: ${value};`).join(' ');
+  };
+
+  const generateAndSaveHTML = () => {
+    const htmlContent = generateHTML(droppedComponents);
+    console.log(htmlContent);
+    const fullHTML = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Generated Page</title>
+      </head>
+      <body>
+        ${htmlContent}
+      </body>
+      </html>
+    `;
+
+    // Create a Blob with the HTML content
+    const blob = new Blob([fullHTML], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+
+    // Create a link element and trigger the download
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'generated_page.html';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Clean up the URL object
+    URL.revokeObjectURL(url);
+
+    toast.success('HTML file generated and downloaded successfully!', {
       position: "top-right",
       autoClose: 3000,
       hideProgressBar: false,
@@ -410,12 +610,18 @@ export default function Builder() {
             onClick={() => setCurrentView('mobile')}
           />
         </div>
-        <div className="w-1/3 flex justify-end">
+        <div className="w-1/3 flex justify-end space-x-4">
           <button
             onClick={savePage}
             className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded flex items-center"
           >
             <FaSave className="mr-2" /> Save
+          </button>
+          <button
+            onClick={generateAndSaveHTML}
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded flex items-center"
+          >
+            <FaCode className="mr-2" /> Generate HTML
           </button>
         </div>
       </nav>
@@ -425,10 +631,11 @@ export default function Builder() {
           {initialComponents.map((component) => (
             <div
               key={component.id}
-              className="bg-white border border-gray-300 p-2 mb-2 cursor-move"
+              className="bg-white border border-gray-300 p-2 mb-2 cursor-move flex items-center"
               draggable
               onDragStart={(e) => handleDragStart(e, component)}
             >
+              <span className="mr-2 text-xl">{component.icon}</span>
               {component.name}
             </div>
           ))}
