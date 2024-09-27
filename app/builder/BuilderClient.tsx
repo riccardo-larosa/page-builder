@@ -612,7 +612,7 @@ export default function Builder( {contentItem}: BuilderClientProps ) {
     };
 
     const componentsHTML = components.map(componentToHTML).join('');
-    return `<main style="padding: 200px 20px; display:block;">${componentsHTML}</main>`;
+    return `<main style="padding: 20px 20px; display:block;">${componentsHTML}</main>`;
   };
 
   const styleObjectToString = (styles: Record<string, string>): string => {
