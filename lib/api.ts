@@ -33,7 +33,8 @@ async function getToken() {
     
 }
 export async function fetchContentData() {
-
+    //TODO: do not use. Use /api/content instead
+    //***************************************** */
     //const params = request.nextUrl.searchParams;
     //const pageName = params.get('pageName');
     const token = await getToken();
@@ -61,8 +62,12 @@ export async function fetchContentData() {
         content: item.content,
         id: item.id,
         page: item.page, 
-        last_modified_at: item.meta.timestamps.updated_at
+        name: item.name,
+        status: item.status,
+        last_modified_at: item.meta.timestamps.updated_at,
+        
     }));
-    //console.log(content);
+    console.log(content);
     return content;
 }
+
