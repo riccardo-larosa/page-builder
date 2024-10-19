@@ -11,7 +11,7 @@ export type TextProps = {
     // maxWidth?: string;
 };
 
-const Text: React.FC<TextProps> = ({ text, align, padding }) => {
+const TextFC: React.FC<TextProps> = ({ text, align, padding }) => {
     return (
         <div style={{ 
                 paddingTop: padding,
@@ -30,7 +30,7 @@ const Text: React.FC<TextProps> = ({ text, align, padding }) => {
     );
 };
 
-const TextComponent: Component<TextProps> = {   
+export const Text: Component<TextProps> = {   
     
     label: 'Text',
     defaultProps: {
@@ -57,7 +57,7 @@ const TextComponent: Component<TextProps> = {
             label: 'Padding',
         },
     },
-    reactComponent: Text,
+    reactComponent: TextFC,
 };
 
-export default TextComponent;
+//export default TextComponent;

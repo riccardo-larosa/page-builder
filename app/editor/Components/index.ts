@@ -1,4 +1,4 @@
-import {   DefaultComponentProps } from "../types";
+import { DefaultComponentProps } from "../types";
 import { Fields } from "../types";
 
 
@@ -11,3 +11,5 @@ export type Component<
     reactComponent: React.FC<FieldProps>;
 }
 
+export * from "./Text";
+export * from "./VerticalSpace";

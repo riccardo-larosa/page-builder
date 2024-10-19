@@ -7,11 +7,11 @@ export type VerticalSpaceProps = {
 };
 
 
-const VerticalSpace: React.FC<VerticalSpaceProps> = ({ height }) => {
+const VerticalSpaceFC: React.FC<VerticalSpaceProps> = ({ height }) => {
   return <div style={{ height: `${height}px` }} />;
 };
 
-const VerticalSpaceComponent: Component<VerticalSpaceProps> = {
+export const VerticalSpace: Component<VerticalSpaceProps> = {
   label: 'Vertical Space',
   defaultProps: {
     height: 20,
@@ -23,7 +23,7 @@ const VerticalSpaceComponent: Component<VerticalSpaceProps> = {
       min: 0,
     } ,
   },
-  reactComponent: VerticalSpace,
+  reactComponent: VerticalSpaceFC,
 };
 
-export default VerticalSpaceComponent;
+//export default VerticalSpaceComponent;
