@@ -13,3 +13,4 @@ export type Component<
 
 export * from "./Text";
 export * from "./VerticalSpace";
+export * from "./Heading";

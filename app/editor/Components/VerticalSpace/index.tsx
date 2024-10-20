@@ -26,4 +26,3 @@ export const VerticalSpace: Component<VerticalSpaceProps> = {
   reactComponent: VerticalSpaceFC,
 };
 
-//export default VerticalSpaceComponent;

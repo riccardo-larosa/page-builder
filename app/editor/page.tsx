@@ -13,7 +13,7 @@ import {
   TouchSensor
 } from '@dnd-kit/core';
 
-import { Text, VerticalSpace } from './Components';
+import { Text, VerticalSpace, Heading } from './Components';
 import { Component } from './Components'; // Import the Component type
 import ComponentList from './ComponentList';
 import BuilderArea from './BuilderArea';
@@ -21,14 +21,15 @@ import PropertiesPanel from './PropertiesPanel';
 import { ComponentType } from 'react';
 
 const components: { [key: string]: Component<any> } = {
+  Heading,
   Text,
   VerticalSpace,
+  //Hero,
   // Add other components here as needed
 };
 
 export default function EditorPage() {
   const [builderComponents, setBuilderComponents] = useState<Array<{ type: string; props: any }>>([]);
-  //const [selectedComponent, setSelectedComponent] = useState<number | null>(null);
   const [selectedComponent, setSelectedComponent] = useState<{ type: string; props: any } | null>(null);
 
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -40,17 +41,17 @@ export default function EditorPage() {
   );
 
   const handleDragStart = (event: DragStartEvent) => {
-    console.log('Drag start:', event);
+    //console.log('Drag start:', event);
     setActiveId(event.active.id as string);
   };
 
   const handleDragMove = (event: DragMoveEvent) => {
-    console.log('Drag move:', event);
-    console.log('Over:', event.over);
+    //console.log('Drag move:', event);
+    //console.log('Over:', event.over);
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
-    console.log('Drag end:', event);
+    //console.log('Drag end:', event);
     const { active, over } = event;
     
     if (active && over && over.id === 'builder-area') {
@@ -66,10 +67,10 @@ export default function EditorPage() {
         };
         setBuilderComponents(prevComponents => {
           const newComponents = [...prevComponents, newComponent];
-          console.log('Updated builderComponents:', newComponents);
+          //console.log('Updated builderComponents:', newComponents);
           return newComponents;
         });
-        console.log('New component added:', newComponent);
+        //console.log('New component added:', newComponent);
       }
     } else {
       console.log('Dropped outside builder area:', over ? over.id : 'no over target');

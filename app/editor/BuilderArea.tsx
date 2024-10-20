@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { Component } from './Components';
+import { TrashIcon } from '@heroicons/react/24/outline'; // Make sure to install @heroicons/react
 
 interface BuilderAreaProps {
   components: Array<{ type: string; props: any }>;
@@ -25,6 +26,14 @@ const BuilderArea: React.FC<BuilderAreaProps> = ({
   const handleSelectComponent = (index: number) => {
     setSelectedIndex(index);
     onSelectComponent(components[index]);
+  };
+
+  const handleDeleteComponent = (index: number, event: React.MouseEvent) => {
+    event.stopPropagation(); // Prevent triggering selection when deleting
+    const newComponents = components.filter((_, i) => i !== index);
+    onComponentsChange(newComponents);
+    setSelectedIndex(null);
+    onSelectComponent(null);
   };
 
   return (
@@ -52,12 +61,23 @@ const BuilderArea: React.FC<BuilderAreaProps> = ({
             onClick={() => handleSelectComponent(index)}
             onMouseEnter={() => setHoveredIndex(index)}
             onMouseLeave={() => setHoveredIndex(null)}
-            className={`p-2 my-2 transition-all duration-200 ${
+            className={`relative p-2 my-2 transition-all duration-200 ${
               hoveredIndex === index ? 'border-2 border-gray-400' : ''
             } ${
               selectedIndex === index ? 'border-2 border-blue-500' : ''
             }`}
           >
+            {selectedIndex === index && (
+              <div className="absolute -top-8 right-0 bg-blue-500 text-white px-2 py-1 rounded-t-md flex items-center shadow-md">
+                <span className="mr-2 text-sm">{componentMap[item.type].label || item.type}</span>
+                <button 
+                  onClick={(e) => handleDeleteComponent(index, e)} 
+                  className="text-white hover:text-red-300 focus:outline-none"
+                >
+                  <TrashIcon className="h-4 w-4" />
+                </button>
+              </div>
+            )}
             <ComponentToRender {...item.props} />
           </div>
         );

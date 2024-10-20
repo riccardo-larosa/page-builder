@@ -18,7 +18,7 @@ const TextFC: React.FC<TextProps> = ({ text, align, padding }) => {
                 paddingBottom: padding,
                  }}>
             <span style={{
-                display: "flex",
+                display: "block",
                 textAlign: align,
                 // fontSize: fontSize,
                 // fontWeight: fontWeight,
@@ -59,5 +59,3 @@ export const Text: Component<TextProps> = {
     },
     reactComponent: TextFC,
 };
-
-//export default TextComponent;
