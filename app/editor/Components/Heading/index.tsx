@@ -27,12 +27,12 @@ export const Heading: Component<HeadingProps> = {
             type: 'select',
             label: 'Heading Level',
             options: [
-                { label: 'H1', value: 'h1' },
-                { label: 'H2', value: 'h2' },
-                { label: 'H3', value: 'h3' },
-                { label: 'H4', value: 'h4' },
-                { label: 'H5', value: 'h5' },
-                { label: 'H6', value: 'h6' },
+                { label: 'Heading 1', value: 'h1' },
+                { label: 'Heading 2', value: 'h2' },
+                { label: 'Heading 3', value: 'h3' },
+                { label: 'Heading 4', value: 'h4' },
+                { label: 'Heading 5', value: 'h5' },
+                { label: 'Heading 6', value: 'h6' },
             ],
         },
         align: {
