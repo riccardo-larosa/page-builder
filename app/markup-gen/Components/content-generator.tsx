@@ -1,154 +1,76 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+import { useCompletion } from 'ai/react';
 
 const ContentGenerator = () => {
-  const [contentType, setContentType] = useState('');
+  const { completion, complete, input, handleInputChange, isLoading } = useCompletion({
+    api: '/api/gen-content',
+  });
+
   const [generatedContent, setGeneratedContent] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const abortControllerRef = useRef(null);
+  const [renderedHtml, setRenderedHtml] = useState('');
 
-  const processStreamChunk = useCallback((data) => {
-    if (data.done) {
-      setIsLoading(false);
-    } else if (data.error) {
-      setError(data.error);
-      setIsLoading(false);
-    } else if (data.content) {
-      setGeneratedContent(prevContent => prevContent + data.content);
+  const extractHtmlContent = (content: string) => {
+    // Look for the first occurrence of an HTML tag
+    const htmlStartIndex = content.indexOf('<');
+    if (htmlStartIndex !== -1) {
+      // Return everything from the first HTML tag onwards
+      return content.slice(htmlStartIndex);
     }
-  }, []);
-
-  const generateContent = async () => {
-    setIsLoading(true);
-    setGeneratedContent('');
-    setError('');
-
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-
-    abortControllerRef.current = new AbortController();
-
-    try {
-      console.log('Sending request to /api/gen-content');
-      const response = await fetch('/api/gen-content', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ contentType }),
-        signal: abortControllerRef.current.signal,
-      });
-
-      console.log('Response received:', response);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      if (!response.body) {
-        throw new Error('Response body is null');
-      }
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) {
-          console.log('Stream complete');
-          break;
-        }
-
-        const chunk = decoder.decode(value);
-        console.log('Received chunk:', chunk);
-
-        const lines = chunk.split('\n\n');
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            try {
-              const data = JSON.parse(line.slice(6));
-              processStreamChunk(data);
-            } catch (e) {
-              console.error('Error parsing JSON:', e);
-            }
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Error in generateContent:', error);
-      setError(`Error generating content: ${error.message}`);
-    } finally {
-      setIsLoading(false);
-      if (generatedContent === '') {
-        setError('Content generation timed out. Please try again.');
-      }
-    }
+    // If no HTML tag is found, return the original content
+    return content;
   };
 
-  React.useEffect(() => {
-    return () => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-    };
-  }, []);
+  useEffect(() => {
+    if (completion) {
+      const htmlContent = extractHtmlContent(completion);
+      setGeneratedContent(completion); // Keep the full content for display
+      setRenderedHtml(htmlContent); // Set only the HTML part for rendering
+    }
+  }, [completion]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setGeneratedContent('');
+    setRenderedHtml('');
+    await complete(input);
+  };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle>Streaming LLM Content Generator</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex space-x-4">
-            <Input
-              type="text"
-              value={contentType}
-              onChange={(e) => setContentType(e.target.value)}
-              placeholder="Enter content type"
-              className="flex-grow"
-            />
-            <Button onClick={generateContent} disabled={isLoading}>
-              {isLoading ? 'Generating...' : 'Generate'}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+    <div className="p-4 flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="w-full flex gap-2">
+        <Input
+          value={input}
+          placeholder="Enter content type..."
+          onChange={handleInputChange}
+          className="flex-grow"
+        />
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? 'Generating...' : 'Generate'}
+        </Button>
+      </form>
 
-      {error && (
-        <Alert variant="destructive" className="mb-8">
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Generated Content</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <pre className="whitespace-pre-wrap">{generatedContent}</pre>
+          </CardContent>
+        </Card>
 
-      {generatedContent && (
-        <div className="space-y-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>Generated Content</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div dangerouslySetInnerHTML={{ __html: generatedContent }} />
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>HTML Source</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <pre className="bg-gray-100 p-4 rounded-md overflow-x-auto">
-                <code>{generatedContent}</code>
-              </pre>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+        <Card>
+          <CardHeader>
+            <CardTitle>Rendered HTML</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div dangerouslySetInnerHTML={{ __html: renderedHtml }} />
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
