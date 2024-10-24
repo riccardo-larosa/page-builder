@@ -1,5 +1,6 @@
 import React from 'react';
 import { Component } from '../index';
+import styles from "./styles.module.css";
 
 export type HeadingProps = {
     text: string;

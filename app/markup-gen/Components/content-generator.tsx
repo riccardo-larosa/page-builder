@@ -3,6 +3,10 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useCompletion } from 'ai/react';
+import Prism from 'prismjs';
+import 'prismjs/themes/prism.css';
+import 'prismjs/components/prism-markup';
+
 
 const ContentGenerator = () => {
   const { completion, complete, input, handleInputChange, isLoading } = useCompletion({
@@ -13,14 +17,15 @@ const ContentGenerator = () => {
   const [renderedHtml, setRenderedHtml] = useState('');
 
   const extractHtmlContent = (content: string) => {
-    // Look for the first occurrence of an HTML tag
-    const htmlStartIndex = content.indexOf('<');
-    if (htmlStartIndex !== -1) {
+    // Look for <snippet> open and close tags and return the content inside
+    const snippetStartIndex = content.indexOf('<snippet');
+    const snippetEndIndex = content.indexOf('</snippet>');
+    if (snippetStartIndex !== -1 && snippetEndIndex !== -1) {
       // Return everything from the first HTML tag onwards
-      return content.slice(htmlStartIndex);
+      return content.slice(snippetStartIndex, snippetEndIndex + 8);
     }
-    // If no HTML tag is found, return the original content
-    return content;
+    // If no HTML tag is found, return empty string
+    return "";
   };
 
   useEffect(() => {
@@ -30,6 +35,12 @@ const ContentGenerator = () => {
       setRenderedHtml(htmlContent); // Set only the HTML part for rendering
     }
   }, [completion]);
+
+  useEffect(() => {
+    if (generatedContent) {
+      Prism.highlightAll();
+    }
+  }, [generatedContent]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,7 +69,9 @@ const ContentGenerator = () => {
             <CardTitle>Generated Content</CardTitle>
           </CardHeader>
           <CardContent>
-            <pre className="whitespace-pre-wrap">{generatedContent}</pre>
+            <pre className="whitespace-pre-wrap text-xs bg-gray-100 p-4 rounded-md overflow-x-auto">
+              <code className="language-html">{generatedContent}</code>
+            </pre>
           </CardContent>
         </Card>
 
