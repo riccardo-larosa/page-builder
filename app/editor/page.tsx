@@ -18,12 +18,14 @@ import { Component } from './Components'; // Import the Component type
 import ComponentList from './ComponentList';
 import BuilderArea from './BuilderArea';
 import PropertiesPanel from './PropertiesPanel';
+import { Button } from './Components';
 import { ComponentType } from 'react';
 
 const components: { [key: string]: Component<any> } = {
   Heading,
   Text,
   VerticalSpace,
+  Button,
   //Hero,
   // Add other components here as needed
 };

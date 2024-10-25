@@ -42,6 +42,12 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                   <option key={option.value} value={option.value}>{option.label}</option>
                 ))}
               </select>
+            ) : field.type === 'textarea' ? (
+              <textarea
+                value={selectedComponent.props[key] || ''}
+                onChange={(e) => handleChange(key, e.target.value)}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 resize-y min-h-[100px]"
+              />
             ) : (
               <input
             type="text"

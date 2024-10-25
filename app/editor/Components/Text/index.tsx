@@ -40,7 +40,7 @@ export const Text: Component<TextProps> = {
     },
     fields: {
         text: {
-            type: 'text',
+            type: 'textarea',
             label: 'Text',
         },
         align: {
