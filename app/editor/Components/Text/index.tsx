@@ -34,7 +34,7 @@ export const Text: Component<TextProps> = {
     
     label: 'Text',
     defaultProps: {
-        text: 'Hello World',
+        text: 'If you think you understand quantum mechanics, you don\'t understand quantum mechanics',
         align: 'left',
         padding: '10px',
     },

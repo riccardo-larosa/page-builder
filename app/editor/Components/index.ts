@@ -15,3 +15,4 @@ export * from "./Text";
 export * from "./VerticalSpace";
 export * from "./Heading";
 export * from "./Button";
+export * from "./Hero";

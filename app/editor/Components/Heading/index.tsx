@@ -15,7 +15,7 @@ const HeadingFC: React.FC<HeadingProps> = ({ text, headingLevel, align }) => {
 export const Heading: Component<HeadingProps> = {
     label: 'Heading',
     defaultProps: {
-        text: 'Title',
+        text: 'Believe you can',
         headingLevel: 'h1',
         align: 'center',
     },

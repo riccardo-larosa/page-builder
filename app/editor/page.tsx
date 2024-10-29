@@ -13,12 +13,10 @@ import {
   TouchSensor
 } from '@dnd-kit/core';
 
-import { Text, VerticalSpace, Heading } from './Components';
-import { Component } from './Components'; // Import the Component type
+import { Text, VerticalSpace, Heading, Hero, Button, Component } from './Components';
 import ComponentList from './ComponentList';
 import BuilderArea from './BuilderArea';
 import PropertiesPanel from './PropertiesPanel';
-import { Button } from './Components';
 import { ComponentType } from 'react';
 
 const components: { [key: string]: Component<any> } = {
@@ -26,7 +24,7 @@ const components: { [key: string]: Component<any> } = {
   Text,
   VerticalSpace,
   Button,
-  //Hero,
+  Hero,
   // Add other components here as needed
 };
 
