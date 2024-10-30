@@ -15,6 +15,7 @@ import {
 
 import { Text, VerticalSpace, Heading, Hero, Button, Component } from './Components';
 import ComponentList from './ComponentList';
+import Header from './PageComponents/Header';
 import BuilderArea from './BuilderArea';
 import PropertiesPanel from './PropertiesPanel';
 import { ComponentType } from 'react';
@@ -29,6 +30,7 @@ const components: { [key: string]: Component<any> } = {
 };
 
 export default function EditorPage() {
+  const [pageTitle, setPageTitle] = useState<string>('Page Title');
   const [builderComponents, setBuilderComponents] = useState<Array<{ type: string; props: any }>>([]);
   const [selectedComponent, setSelectedComponent] = useState<{ type: string; props: any } | null>(null);
 
@@ -92,8 +94,10 @@ export default function EditorPage() {
 
 
   return (
-    <DndContext sensors={sensors} onDragStart={handleDragStart} onDragMove={handleDragMove} onDragEnd={handleDragEnd}>
-      <div className="flex">
+    <>
+      <Header pageTitle={pageTitle} setPageTitle={setPageTitle} />
+      <DndContext sensors={sensors} onDragStart={handleDragStart} onDragMove={handleDragMove} onDragEnd={handleDragEnd}>
+        <div className="flex">
         <ComponentList components={Object.keys(components)} />
         <BuilderArea
           components={builderComponents}
@@ -109,7 +113,8 @@ export default function EditorPage() {
       </div>
       <DragOverlay>
         {activeId ? <div>{activeId}</div> : null}
-      </DragOverlay>
-    </DndContext>
+        </DragOverlay>
+      </DndContext>
+    </>
   );
 }

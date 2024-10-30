@@ -39,7 +39,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             field.type === 'select' ? (
               <select value={selectedComponent.props[key] || ''} onChange={(e) => handleChange(key, e.target.value)}>
                 {field.options.map((option) => (
-                  <option key={option.value} value={option.value}>{option.label}</option>
+                  <option key={String(option.value)} value={String(option.value)}>{option.label}</option>
                 ))}
               </select>
             ) : field.type === 'textarea' ? (

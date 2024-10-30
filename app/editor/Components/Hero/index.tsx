@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, ButtonProps, Component } from '../index';
+import styles from './styles.module.css';
 
 export type HeroProps = {
     title: string;
@@ -15,24 +16,10 @@ const HeroFC: React.FC<HeroProps> = ({ title, description, image, buttonLabel, b
             paddingTop: padding,
             paddingBottom: padding,
             }}>
-                <div id="hero-image" style={{ backgroundImage: `url(${image})`, 
-                    backgroundSize: 'cover', 
-                    backgroundPosition: '50% 50%', 
-                    position: 'absolute',
-                    right: '0',
-                    bottom: '0',
-                    left: '0',
-                    top: '0',
-                    inset: '0px',
-                    }} />
-                <div style={{ backgroundImage: 'linear-gradient(-90deg, hsla(0, 0%, 100%, 0), #f7faff 50%)',
-                    position: 'absolute',
-                    right: '0',
-                    bottom: '0',
-                    left: '0',
-                    top: '0',
-                    }} />
-                <div id="hero-content" style={{ position: 'relative', zIndex: '1', maxWidth: '50%' }}>
+                <div id="hero-image" className={styles.heroImage} 
+                    style={{ backgroundImage: `url(${image})` }} />
+                <div  className={styles.overlay} />
+                <div id="hero-content" className={styles.heroContent}>
                     <h1>{title}</h1>
                     <p>{description}</p>
                     <div id="hero-button" style={{ marginTop: '20px' }}>

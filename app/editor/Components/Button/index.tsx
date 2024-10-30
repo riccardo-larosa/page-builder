@@ -10,7 +10,7 @@ export type ButtonProps = {
 const ButtonFC: React.FC<ButtonProps> = ({ label, href }) => {
     return <button 
             className="bg-blue-500 text-white px-4 py-2 rounded-md"
-            onClick={() => window.location.href=href}>{label}
+            onClick={() => href && (window.location.href = href)}>{label}
             </button>;
 };
 
