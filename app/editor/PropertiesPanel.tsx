@@ -1,5 +1,6 @@
 import React from 'react';
 import { Component } from './Components';
+import Editor from '@monaco-editor/react';
 
 interface PropertiesPanelProps {
   selectedComponent: { type: string; props: any } | null;
@@ -48,7 +49,13 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 onChange={(e) => handleChange(key, e.target.value)}
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 resize-y min-h-[100px]"
               />
-            ) : (
+            ) : field.type === 'html' ? (
+              <textarea
+                value={selectedComponent.props[key] || ''}
+                onChange={(e) => handleChange(key, e.target.value)}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 resize-y min-h-[100px]"
+              />
+            ) :(
               <input
             type="text"
             value={selectedComponent.props[key] || ''}

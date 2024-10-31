@@ -17,3 +17,9 @@
     top: 0;
     background-image: linear-gradient(-90deg, hsla(0, 0%, 100%, 0), #f7faff 50%);
 }
+
+.heroContent {
+    position: relative;
+    z-index: 1;
+    max-width: 50%;
+}

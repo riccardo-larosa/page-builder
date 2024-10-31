@@ -16,3 +16,4 @@ export * from "./VerticalSpace";
 export * from "./Heading";
 export * from "./Button";
 export * from "./Hero";
+export * from "./CustomHtml";

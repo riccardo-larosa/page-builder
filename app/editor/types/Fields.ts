@@ -29,6 +29,10 @@ export type SelectField = BaseField & {
   options: FieldOptions;
 };
 
+export type HtmlField = BaseField & {
+  type: 'html';
+};
+
 export type Fields<T> = {
     [K in keyof T]: Field<T[K]>;
 };
@@ -38,8 +42,10 @@ export type Field<Props extends any = any> =
   | TextField
   | NumberField
   | TextareaField
-  | SelectField;
+  | SelectField
+  | HtmlField;
 
+  
 export type FieldProps<ValueType = any, F = Field<any>> = {
   field: F;
   value: ValueType;
