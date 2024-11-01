@@ -20,18 +20,18 @@ const HTMLEditor = ({ initialValue = '', onChange = () => {} }) => {
           <div className="text-sm font-medium mb-2">HTML Editor</div>
           <div className="flex-1 border rounded-md overflow-hidden">
             <Editor
-              height="100%"
+              height="600"
+              width="100%"
               defaultLanguage="html"
               defaultValue={content}
               onChange={handleEditorChange}
               options={{
                 minimap: { enabled: false },
-                fontSize: 14,
+                fontSize: 12,
                 wordWrap: 'on',
                 scrollBeyondLastLine: false,
                 roundedSelection: false,
                 padding: { top: 10 },
-                lineNumbers: 'on',
                 glyphMargin: false,
               }}
             />

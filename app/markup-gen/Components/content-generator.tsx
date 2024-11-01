@@ -33,12 +33,14 @@ const ContentGenerator = () => {
       const htmlContent = extractHtmlContent(completion);
       setGeneratedContent(completion); // Keep the full content for display
       setRenderedHtml(htmlContent); // Set only the HTML part for rendering
+      //console.log(htmlContent);
     }
   }, [completion]);
 
   useEffect(() => {
     if (generatedContent) {
       Prism.highlightAll();
+      console.log(generatedContent);
     }
   }, [generatedContent]);
 

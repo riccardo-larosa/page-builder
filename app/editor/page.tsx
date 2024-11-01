@@ -13,7 +13,7 @@ import {
   TouchSensor
 } from '@dnd-kit/core';
 
-import { Text, VerticalSpace, Heading, Hero, Button, Custom, Component } from './Components';
+import { Text, VerticalSpace, Heading, Hero, Button, CustomHtml, Component } from './Components';
 import ComponentList from './ComponentList';
 import Header from './PageComponents/Header';
 import BuilderArea from './BuilderArea';
@@ -26,7 +26,7 @@ const components: { [key: string]: Component<any> } = {
   Text,
   VerticalSpace,
   Button,
-  Custom,
+  CustomHtml,
   // Add other components here as needed
 };
 
@@ -56,16 +56,16 @@ export default function EditorPage() {
   const handleDragEnd = (event: DragEndEvent) => {
     //console.log('Drag end:', event);
     const { active, over } = event;
-    
+
     if (active && over && over.id === 'builder-area') {
       const newComponentType = active.id as string;
       const componentConfig = components[newComponentType];
       if (componentConfig) {
         const newComponent = {
           type: newComponentType,
-          props: { 
+          props: {
             id: Date.now().toString(),
-            ...componentConfig.defaultProps 
+            ...componentConfig.defaultProps
           }
         };
         setBuilderComponents(prevComponents => {
@@ -93,27 +93,40 @@ export default function EditorPage() {
     }
   };
 
+  const handleSave = () => {
+    // You can customize this to save to your backend/localStorage
+    const pageData = {
+      title: pageTitle,
+      components: builderComponents
+    };
+    console.log('Saving page data:', pageData);
+    // Add actual save logic here
+  };
 
   return (
     <>
-      <Header pageTitle={pageTitle} setPageTitle={setPageTitle} />
+      <Header 
+        pageTitle={pageTitle} 
+        setPageTitle={setPageTitle}
+        onSave={handleSave}
+      />
       <DndContext sensors={sensors} onDragStart={handleDragStart} onDragMove={handleDragMove} onDragEnd={handleDragEnd}>
         <div className="flex">
-        <ComponentList components={Object.keys(components)} />
-        <BuilderArea
-          components={builderComponents}
-          componentMap={components}
-          onSelectComponent={setSelectedComponent}
-          onComponentsChange={setBuilderComponents}
-        />
-        <PropertiesPanel
-          selectedComponent={selectedComponent}
-          componentMap={components}
-          onUpdateComponent={handleUpdateComponent}
-        />
-      </div>
-      <DragOverlay>
-        {activeId ? <div>{activeId}</div> : null}
+          <ComponentList components={Object.keys(components)} />
+          <BuilderArea
+            components={builderComponents}
+            componentMap={components}
+            onSelectComponent={setSelectedComponent}
+            onComponentsChange={setBuilderComponents}
+          />
+          <PropertiesPanel
+            selectedComponent={selectedComponent}
+            componentMap={components}
+            onUpdateComponent={handleUpdateComponent}
+          />
+        </div>
+        <DragOverlay>
+          {activeId ? <div>{activeId}</div> : null}
         </DragOverlay>
       </DndContext>
     </>

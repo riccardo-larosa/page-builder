@@ -6,11 +6,11 @@ export type CustomProps = {
     html: string;
 };
 
-export const CustomFC: React.FC<CustomProps> = ({ html }) => {
+export const CustomHtmlFC: React.FC<CustomProps> = ({ html }) => {
     return <div dangerouslySetInnerHTML={{ __html: html }} />;
 };
 
-export const Custom: Component<CustomProps> = {
+export const CustomHtml: Component<CustomProps> = {
     label: "Custom HTML",
     fields: {
         html: {
@@ -18,7 +18,7 @@ export const Custom: Component<CustomProps> = {
             label: "Custom HTML",
         },
     },
-    reactComponent: CustomFC,
+    reactComponent: CustomHtmlFC,
     defaultProps: {
         html: "<p>Hello World</p>",
     },
