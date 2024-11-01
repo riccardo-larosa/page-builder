@@ -1,5 +1,6 @@
 'use client';
 import React, { useState } from 'react';
+import { createRoot } from 'react-dom/client';
 import {
   DndContext,
   DragEndEvent,
@@ -93,20 +94,75 @@ export default function EditorPage() {
     }
   };
 
-  const handleSave = () => {
-    // You can customize this to save to your backend/localStorage
-    const pageData = {
-      title: pageTitle,
-      components: builderComponents
-    };
-    console.log('Saving page data:', pageData);
-    // Add actual save logic here
+
+  async function generateHTML(builderComponents: { type: string; props: any; }[]) {
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+  
+    const root = createRoot(container);
+  
+    // Generate unique IDs for each component
+    const elements = builderComponents.map(({ type, props }, index) => {
+      const componentConfig = components[type];
+      if (!componentConfig) return null;
+  
+      const componentId = `component-${type}-${index}`;
+      return React.createElement(componentConfig.reactComponent, {
+        key: componentId,
+        ...props
+      });
+    });
+  
+    root.render(React.createElement(React.Fragment, null, elements));
+    // Wait for the components to render
+    await new Promise(resolve => setTimeout(resolve, 0));
+  
+    // Generate JavaScript for each component (if any)
+    const componentScripts = builderComponents.map(({ type, props }, index) => {
+      // If the component is a button, add an event listener to it. 
+      if (type === 'Button') {
+        return `
+                  document.getElementById('${props.id}').addEventListener('click', function() {
+                      const href = '${props.href}';
+                      if (href) {
+                          window.location.href = href;
+                      }
+                  });
+              `;
+      }
+      // Add other component types as needed
+      return '';
+    }).filter(Boolean);
+  
+    let fullHtmlContent = container.innerHTML;
+    if (componentScripts.length > 0) {
+      fullHtmlContent = `
+          ${fullHtmlContent}
+          <script>
+            (function() {
+                ${componentScripts.join('\n')}
+            })();
+        </script>`;
+    }
+  
+    // Clean up
+    root.unmount();
+    document.body.removeChild(container);
+    return fullHtmlContent;
+  }
+
+  // Save the page data to the APIs
+  const handleSave = async () => {
+    let fullHtmlContent = await generateHTML(builderComponents);
+
+    console.log('Full HTML content:', fullHtmlContent);
+    // Rest of your save logic...
   };
 
   return (
     <>
-      <Header 
-        pageTitle={pageTitle} 
+      <Header
+        pageTitle={pageTitle}
         setPageTitle={setPageTitle}
         onSave={handleSave}
       />
@@ -132,3 +188,5 @@ export default function EditorPage() {
     </>
   );
 }
+
+

@@ -11,8 +11,6 @@ interface PropertiesPanelProps {
   onUpdateComponent: (updatedProps: any) => void;
 }
 
-
-
 const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
   selectedComponent,
   componentMap,
@@ -32,7 +30,6 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
   const fields = componentConfig.fields || {};
 
   const handleChange = (key: string, value: any) => {
-    //console.log('value', value);
     onUpdateComponent({ ...selectedComponent.props, [key]: value });
     updateEditorHeight();
   };
@@ -42,18 +39,8 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
     api: '/api/gen-content',
   });
 
-  const [generatedContent, setGeneratedContent] = useState('');
-  //const [renderedHtml, setRenderedHtml] = useState(''); //TODO: may not need this
-
-  // const extractHtmlContent = (content: string) => {
-  //   // Look for <snippet> open and close tags and return the content inside
-  //   const snippetStartIndex = content.indexOf('<snippet');
-  //   const snippetEndIndex = content.indexOf('</snippet>');
-  //   if (snippetStartIndex !== -1 && snippetEndIndex !== -1) {
-  //     return content.slice(snippetStartIndex, snippetEndIndex + 8);
-  //   }
-  //   return "";
-  // };
+  //const [generatedContent, setGeneratedContent] = useState('');
+  
 
   const extractHtmlContentStreaming = (content: string) => {
     // Look for <snippet> open and close tags and return the content inside
@@ -72,23 +59,15 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 
   useEffect(() => {
     if (completion && editorRef.current) {
-      console.log('completion', completion);
-      //const htmlContent = extractHtmlContent(completion);
+      //console.log('completion', completion);
       editorRef.current.getModel().setValue(extractHtmlContentStreaming(completion));
-      //setGeneratedContent(completion); // Keep the full content for display
-      //setRenderedHtml(htmlContent); // Set only the HTML part for rendering
     }
   }, [completion]);
 
-  // useEffect(() => {
-  //   if (generatedContent && editorRef.current) {
-  //     editorRef.current.getModel().setValue(extractHtmlContentStreaming(generatedContent));
-  //   }
-  // }, [generatedContent]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setGeneratedContent('');
+    //setGeneratedContent('');
     //setRenderedHtml('');
     await complete(input);
   };
@@ -97,7 +76,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
   const [editorHeight, setEditorHeight] = useState('200px'); // Initial height for ~10 lines
   const editorRef = useRef(null);
 
-  const handleEditorDidMount = (editor) => {
+  const handleEditorDidMount = (editor: any) => {
     console.log('editor', editor);
     editorRef.current = editor;
     updateEditorHeight();
@@ -122,8 +101,8 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
   }, []);
 
   // Debug logs
-  console.log('fields', fields);
-  console.log('selectedComponent', selectedComponent);
+  //console.log('fields', fields);
+  //console.log('selectedComponent', selectedComponent);
 
   return (
     <div className="w-64 bg-gray-100 p-4">
