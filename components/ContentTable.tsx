@@ -1,5 +1,5 @@
 import React from 'react';
-import { formatDateTime, formatJSON } from '@/lib/utils';
+import { formatDate } from '@/lib/utils';
 import Link from 'next/link';
 import { ContentItem } from '@/app/api/content/route';
 
@@ -26,7 +26,8 @@ const ContentTable: React.FC<ContentTableProps> = ({ data }) => {
             <tr key={item.id}>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                 <Link 
-                    href={`/builder?content_id=${item.content_id}`}
+                    //href={`/builder?content_id=${item.content_id}`}
+                    href={`/editor/builder?content_id=${item.content_id}`}
                     className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
                   >
                     {item.name}
@@ -34,7 +35,7 @@ const ContentTable: React.FC<ContentTableProps> = ({ data }) => {
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{item.page}</td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{(item.status)}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{formatDateTime(item.last_modified_at)}</td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{(item.last_modified_at)}</td>
               {/* Add more table cells as needed */}
             </tr>
           ))}

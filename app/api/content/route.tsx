@@ -85,15 +85,15 @@ export async function GET(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
     const data = await request.json();
-    console.log(`data: ${data.data.id}`);
-    console.log(JSON.stringify(data));
+    //console.log(`data: ${data.data.id}`);
+    //console.log(JSON.stringify(data));
     const token = await getToken();
-    console.log(`token: ${token}`);
+    //console.log(`token: ${token}`);
     const base_url = process.env.API_BASE_URL;
     //const url_str = `${base_url}/v2/settings/extensions/custom-apis/c122d9e2-94fa-4559-91a9-2634ced36473/entries/${data.data.id}`;
     // TODO: I think there is a bug in the API, it should be like this:
     const url_str = `${base_url}/v2/extensions/store-content/${data.data.content_id}`;
-    console.log(`url_str: ${url_str}`);
+    //console.log(`url_str: ${url_str}`);
     const response = await fetch(url_str, {
         method: 'PUT',
         headers: {
@@ -111,3 +111,25 @@ export async function PUT(request: NextRequest) {
     return Response.json(results);
 }
 
+export async function POST(request: NextRequest) {
+    const data = await request.json();
+    console.log(data);
+    const token = await getToken();
+    const base_url = process.env.API_BASE_URL;
+    const url_str = `${base_url}/v2/extensions/store-content`;
+    const response = await fetch(url_str, {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(data)
+    });
+    if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+    }
+    const results = await response.json();
+    console.log(results);
+    return Response.json(results);
+}

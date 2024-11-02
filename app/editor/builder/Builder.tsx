@@ -1,6 +1,7 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import { notFound } from 'next/navigation';
 import {
   DndContext,
   DragEndEvent,
@@ -14,12 +15,13 @@ import {
   TouchSensor
 } from '@dnd-kit/core';
 
-import { Text, VerticalSpace, Heading, Hero, Button, CustomHtml, Component } from './Components';
-import ComponentList from './ComponentList';
-import Header from './PageComponents/Header';
-import BuilderArea from './BuilderArea';
-import PropertiesPanel from './PropertiesPanel';
-import { ComponentType } from 'react';
+import { Text, VerticalSpace, Heading, Hero, Button, CustomHtml, Component } from '../Components';
+import ComponentList from '../BuilderComponents/ComponentList';
+import Header from '../BuilderComponents/Header';
+import BuilderArea from '../BuilderComponents/BuilderArea';
+import PropertiesPanel from '../BuilderComponents/PropertiesPanel';
+//import { ComponentType } from 'react';
+import { ContentItem } from '@/app/api/content/route';
 
 const components: { [key: string]: Component<any> } = {
   Hero,
@@ -31,11 +33,21 @@ const components: { [key: string]: Component<any> } = {
   // Add other components here as needed
 };
 
-export default function EditorPage() {
+
+interface EditorClientProps {
+  contentItem: ContentItem;
+}
+
+export default function EditorClient( {contentItem}: EditorClientProps ) {
+  const contentId = contentItem.content_id;
+
+  if (!contentId) {
+    notFound();
+  }
+
   const [pageTitle, setPageTitle] = useState<string>('Page Title');
   const [builderComponents, setBuilderComponents] = useState<Array<{ type: string; props: any }>>([]);
   const [selectedComponent, setSelectedComponent] = useState<{ type: string; props: any } | null>(null);
-
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const sensors = useSensors(
@@ -43,6 +55,14 @@ export default function EditorPage() {
     useSensor(MouseSensor),
     useSensor(TouchSensor)
   );
+
+  //TODO: load contentItem to the state
+  useEffect(() => {
+    if (contentItem.content) {
+      setBuilderComponents(JSON.parse(contentItem.content));
+    }
+  }, [contentItem.content]);
+
 
   const handleDragStart = (event: DragStartEvent) => {
     //console.log('Drag start:', event);
@@ -153,10 +173,34 @@ export default function EditorPage() {
 
   // Save the page data to the APIs
   const handleSave = async () => {
+    const pageData = JSON.stringify(builderComponents);
     let fullHtmlContent = await generateHTML(builderComponents);
 
     console.log('Full HTML content:', fullHtmlContent);
     // Rest of your save logic...
+    const response = await fetch('/api/content', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({
+        data: {
+          type: "store_content_ext",
+          id: contentItem.id,
+          content_id: contentItem.content_id,
+          content: pageData,
+          html: fullHtmlContent,
+        }
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to save content');
+    }
+
+    const result = await response.json();
+    console.log('Save result:', result);
   };
 
   return (

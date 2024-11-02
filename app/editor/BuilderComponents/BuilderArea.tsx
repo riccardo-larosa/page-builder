@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDroppable } from '@dnd-kit/core';
-import { Component } from './Components';
+import { Component } from '../Components';
 import { TrashIcon, ComputerDesktopIcon, DeviceTabletIcon, DevicePhoneMobileIcon } from '@heroicons/react/24/outline'; // Make sure to install @heroicons/react
 
 interface BuilderAreaProps {

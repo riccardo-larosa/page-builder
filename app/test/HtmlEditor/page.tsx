@@ -1,6 +1,6 @@
 'use client';
 
-import HTMLEditor from '@/app/editor/PageComponents/HtmlEditor';
+import HTMLEditor from '@/app/editor/BuilderComponents/HtmlEditor';
 
 export default function HtmlEditor() {
   const handleChange = (newCode: string) => {

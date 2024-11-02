@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Component } from './Components';
+import { Component } from '../Components';
 import Editor from '@monaco-editor/react';
 import { useCompletion } from 'ai/react';
 import { Input } from "@/components/ui/input"
