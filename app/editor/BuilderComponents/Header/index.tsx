@@ -13,8 +13,10 @@ export default function Header({ pageTitle, setPageTitle, onSave }: HeaderProps)
         <div>
           <input
             type="url"
-            placeholder="Enter URL..."
+            //placeholder={pageTitle}
             className={styles.urlInput}
+            defaultValue={pageTitle || ''}
+            onChange={(e) => setPageTitle(e.target.value)}
           />
         </div>
         <div className={styles.toolsContainer}>

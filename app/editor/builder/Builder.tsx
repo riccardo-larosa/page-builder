@@ -56,12 +56,12 @@ export default function EditorClient( {contentItem}: EditorClientProps ) {
     useSensor(TouchSensor)
   );
 
-  //TODO: load contentItem to the state
   useEffect(() => {
     if (contentItem.content) {
       setBuilderComponents(JSON.parse(contentItem.content));
     }
   }, [contentItem.content]);
+  //setPageTitle(contentItem.name);
 
 
   const handleDragStart = (event: DragStartEvent) => {
@@ -191,6 +191,7 @@ export default function EditorClient( {contentItem}: EditorClientProps ) {
           content_id: contentItem.content_id,
           content: pageData,
           html: fullHtmlContent,
+          name: pageTitle,
         }
       }),
     });
@@ -206,7 +207,7 @@ export default function EditorClient( {contentItem}: EditorClientProps ) {
   return (
     <>
       <Header
-        pageTitle={pageTitle}
+        pageTitle={contentItem.name}
         setPageTitle={setPageTitle}
         onSave={handleSave}
       />

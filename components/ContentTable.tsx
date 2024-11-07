@@ -1,5 +1,5 @@
 import React from 'react';
-import { formatDate } from '@/lib/utils';
+import { formatDateAndTime } from '@/lib/utils';
 import Link from 'next/link';
 import { ContentItem } from '@/app/api/content/route';
 
@@ -35,7 +35,7 @@ const ContentTable: React.FC<ContentTableProps> = ({ data }) => {
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{item.page}</td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{(item.status)}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{(item.last_modified_at)}</td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{(formatDateAndTime(item.last_modified_at))}</td>
               {/* Add more table cells as needed */}
             </tr>
           ))}
