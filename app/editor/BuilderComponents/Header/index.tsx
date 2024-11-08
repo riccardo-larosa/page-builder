@@ -10,10 +10,15 @@ export default function Header({ pageTitle, setPageTitle, onSave }: HeaderProps)
   return (
     <header>
       <div className={styles.tools}>
-        <div>
+        <div className="flex items-center gap-4">
+          <a 
+            href="/editor/dashboard"
+            className="text-gray-600 hover:text-gray-800"
+          >
+            ← Dashboard
+          </a>
           <input
             type="url"
-            //placeholder={pageTitle}
             className={styles.urlInput}
             defaultValue={pageTitle || ''}
             onChange={(e) => setPageTitle(e.target.value)}

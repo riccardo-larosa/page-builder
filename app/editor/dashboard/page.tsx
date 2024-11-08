@@ -7,7 +7,9 @@ export default async function DashboardPage() {
   async function fetchContentData() {
     const base_url = process.env.NEXT_PUBLIC_BASE_URL;
     try {
-      const response = await fetch(`${base_url}/api/content`);
+      const response = await fetch(`${base_url}/api/content`, {
+        cache: 'no-store',
+      });
       if (!response.ok) {
         console.error('API Error:', response.status, await response.text());
         return [];  // Return empty array as fallback

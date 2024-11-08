@@ -58,8 +58,9 @@ export async function GET(request: NextRequest) {
             headers: {
                 'Accept': 'application/json',
                 'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
             },
-            //cache: 'no-store',
+            cache: 'no-store',
         }
     );
 

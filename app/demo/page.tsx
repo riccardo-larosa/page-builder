@@ -1,14 +1,8 @@
 import { Text, VerticalSpace, Heading, Hero, Button, CustomHtml } from '../editor/Components';
+import { ComponentMap } from '../editor/Components';
 // Convert to async server component
+
 export default async function DemoPage() {
-  const componentMap = {
-    Text,
-    VerticalSpace,
-    Heading,
-    Hero,
-    Button,
-    CustomHtml
-  };
 
   // Server-side data fetching
   let components = [];
@@ -30,7 +24,7 @@ export default async function DemoPage() {
   return (
     <div className="container mx-auto">
       {components.map((componentData: any, index: number) => {
-        const componentConfig = componentMap[componentData.type];
+        const componentConfig = ComponentMap[componentData.type as keyof typeof ComponentMap];
         const ComponentToRender = componentConfig.reactComponent;
         
         if (!ComponentToRender) {

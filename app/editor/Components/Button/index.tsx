@@ -9,11 +9,11 @@ export type ButtonProps = {
 };
 
 const ButtonFC: React.FC<ButtonProps> = ({ id, label, href }) => {
-    return <button 
-            id={id}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md"
-            onClick={() => href && (window.location.href = href)}>{label}
-            </button>;
+    return <a
+        id={id}
+        href={href}
+        className="bg-blue-500 text-white px-4 py-2 rounded-md inline-block no-underline hover:bg-blue-600"
+    >{label}</a>;
 };
 
 export const Button: Component<ButtonProps> = {

@@ -122,7 +122,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
               <textarea
                 value={selectedComponent.props[key] || ''}
                 onChange={(e) => handleChange(key, e.target.value)}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 resize-y min-h-[100px]"
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 resize-y min-h-[200px]"
               />
             ) : field.type === 'html' ? (
               <div className="border rounded-md overflow-hidden" style={{ height: editorHeight }}>
@@ -158,11 +158,6 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                   }}
                 />
               </div>
-              // <textarea
-              //   value={selectedComponent.props[key] || ''}
-              //   onChange={(e) => handleChange(key, e.target.value)}
-              //   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 resize-y min-h-[100px]"
-              // />
             ) : (
               <input
                 type="text"

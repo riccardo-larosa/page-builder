@@ -45,7 +45,7 @@ export default function EditorClient( {contentItem}: EditorClientProps ) {
     notFound();
   }
 
-  const [pageTitle, setPageTitle] = useState<string>('Page Title');
+  const [pageTitle, setPageTitle] = useState<string>(contentItem.name);
   const [builderComponents, setBuilderComponents] = useState<Array<{ type: string; props: any }>>([]);
   const [selectedComponent, setSelectedComponent] = useState<{ type: string; props: any } | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -137,33 +137,33 @@ export default function EditorClient( {contentItem}: EditorClientProps ) {
     // Wait for the components to render
     await new Promise(resolve => setTimeout(resolve, 0));
   
-    // Generate JavaScript for each component (if any)
-    const componentScripts = builderComponents.map(({ type, props }, index) => {
-      // If the component is a button, add an event listener to it. 
-      if (type === 'Button') {
-        return `
-                  document.getElementById('${props.id}').addEventListener('click', function() {
-                      const href = '${props.href}';
-                      if (href) {
-                          window.location.href = href;
-                      }
-                  });
-              `;
-      }
-      // Add other component types as needed
-      return '';
-    }).filter(Boolean);
+    // // Generate JavaScript for each component (if any)
+    // const componentScripts = builderComponents.map(({ type, props }, index) => {
+    //   // If the component is a button, add an event listener to it. 
+    //   if (type === 'Button') {
+    //     return `
+    //               document.getElementById('${props.id}').addEventListener('click', function() {
+    //                   const href = '${props.href}';
+    //                   if (href) {
+    //                       window.location.href = href;
+    //                   }
+    //               });
+    //           `;
+    //   }
+    //   // Add other component types as needed
+    //   return '';
+    // }).filter(Boolean);
   
-    let fullHtmlContent = container.innerHTML;
-    if (componentScripts.length > 0) {
-      fullHtmlContent = `
-          ${fullHtmlContent}
-          <script>
-            (function() {
-                ${componentScripts.join('\n')}
-            })();
-        </script>`;
-    }
+     let fullHtmlContent = container.innerHTML;
+    // if (componentScripts.length > 0) {
+    //   fullHtmlContent = `
+    //       ${fullHtmlContent}
+    //       <script>
+    //         (function() {
+    //             ${componentScripts.join('\n')}
+    //         })();
+    //     </script>`;
+    // }
   
     // Clean up
     root.unmount();

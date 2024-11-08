@@ -1,6 +1,6 @@
 import React from 'react';
 import { Component } from '../index';
-import styles from "./styles.module.css";
+//import styles from "./styles.module.css";
 
 export type HeadingProps = {
     text: string;
@@ -8,8 +8,17 @@ export type HeadingProps = {
     align: 'left' | 'center' | 'right';
 };
 
+const headingStyles = {
+    h1: "text-5xl font-bold leading-tight text-gray-900",
+    h2: "text-4xl font-semibold leading-snug text-gray-800",
+    h3: "text-3xl font-semibold leading-snug text-gray-700",
+    h4: "text-2xl font-medium leading-snug text-gray-600",
+    h5: "text-xl font-medium leading-snug text-gray-600",
+    h6: "text-lg font-medium leading-snug text-gray-600",
+};
+
 const HeadingFC: React.FC<HeadingProps> = ({ text, headingLevel, align }) => {
-    return React.createElement(headingLevel, { style: { textAlign: align } }, text);
+    return React.createElement(headingLevel, { style: { textAlign: align }, className: headingStyles[headingLevel] }, text);
 };
 
 export const Heading: Component<HeadingProps> = {

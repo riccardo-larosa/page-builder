@@ -31,7 +31,7 @@ export async function POST(request: Request) {
         Snippets may be modified by the user and are displayed in a separate UI window for clarity.
         Wrap the snippet in <snippet> tags. Assign a unique id to the snippet.
         Images from the web are not allowed, but you can use placeholder images by specifying 
-        the width and height like so <img src="/images/placeholder/400/320" alt="placeholder" />.
+        the width and height like so for a 500x300 placeholder image: <img src="https://picsum.photos/id/41/500/300" alt="placeholder" />.
         The user interface will render the Scalable Vector Graphics (SVG) image within the artifact tags. 
         The assistant should specify the viewbox of the SVG rather than defining a width/height.
         Use Tailwind classes for styling. DO NOT USE ARBITRARY VALUES (e.g. h-[600px]).
