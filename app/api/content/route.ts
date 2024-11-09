@@ -113,11 +113,23 @@ export async function PUT(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+
     const data = await request.json();
-    console.log(data);
+    const { content_id, name } = data;
+    if (!content_id || !name) {
+      return Response.json({ error: 'Content ID and name are required' }, { status: 400 });
+    }
+    if (!data.status) {
+        data.status = 'draft';
+    }
+    //TODO: ask Steve about this
+    data.type = 'store_content_ext';
+    console.log('data', JSON.stringify(data));
     const token = await getToken();
+    console.log('token', token);
     const base_url = process.env.API_BASE_URL;
     const url_str = `${base_url}/v2/extensions/store-content`;
+    console.log('url_str', url_str);
     const response = await fetch(url_str, {
         method: 'POST',
         headers: {
@@ -125,10 +137,11 @@ export async function POST(request: NextRequest) {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify({data: data})
     });
     if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
+        //console.log('response', response);
+        throw new Error(`Error: ${response.statusText}`);
     }
     const results = await response.json();
     console.log(results);
