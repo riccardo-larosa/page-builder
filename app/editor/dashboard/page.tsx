@@ -14,12 +14,15 @@ export default async function DashboardPage() {
         console.error('API Error:', response.status, await response.text());
         return [];
       }
+      //console.log('response', await response.json());
       return response.json();
     } catch (error) {
       console.error('Fetch error:', error);
       return [];
     }
   };
+
+  //console.log('contentData', contentData);
 
   return <DashboardClient initialData={contentData} />;
 }

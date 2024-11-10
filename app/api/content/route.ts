@@ -147,3 +147,25 @@ export async function POST(request: NextRequest) {
     console.log(results);
     return Response.json(results);
 }
+
+export async function DELETE(request: NextRequest) {
+    const params = request.nextUrl.searchParams;
+    console.log(`params: ${params}`);
+    const token = await getToken();
+    console.log('token', token);
+    const base_url = process.env.API_BASE_URL;
+    const url_str = `${base_url}/v2/extensions/store-content/${params.get('content_id')}`;
+    console.log('url_str', url_str);
+    const response = await fetch(url_str, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        },
+    });
+    if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+    }
+    // const results = await response.json();
+    // console.log(results);
+    return Response.json({message: 'Content deleted successfully'});
+}

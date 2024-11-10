@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import ContentTable from './ContentTable';
+import { TrashIcon } from '@heroicons/react/24/outline';
 
 interface CreatePageData {
   content_id: string;
@@ -96,6 +97,15 @@ export function DashboardClient({ initialData }) {
     setData(newData);
   };
 
+  const refreshData = async () => {
+    // Implement your data fetching logic here
+    const response = await fetch('/api/content');
+    const newData = await response.json();
+    setData(newData);
+  };
+
+  //console.log('data', data);
+
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-4">
@@ -113,7 +123,10 @@ export function DashboardClient({ initialData }) {
           onSubmit={handleCreate}
         />
       )}
-      <ContentTable data={data} />
+      <ContentTable 
+        items={data} 
+        onRefresh={refreshData}
+      />
     </div>
   );
 } 
