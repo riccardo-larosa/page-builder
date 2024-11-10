@@ -7,6 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogDescription,
 } from "@/components/ui/dialog"
 import ContentVersions from '../ContentVersions';
 
@@ -17,7 +18,6 @@ interface HeaderProps {
   contentId: string;
 }
 export default function Header({ pageTitle, setPageTitle, onSave, contentId }: HeaderProps) {
-  console.log('contentId', contentId);
   return (
     <header>
       <div className={styles.tools}>
@@ -54,6 +54,9 @@ export default function Header({ pageTitle, setPageTitle, onSave, contentId }: H
             <DialogContent className="sm:max-w-[625px]">
               <DialogHeader>
                 <DialogTitle>Version History</DialogTitle>
+                <DialogDescription>
+                  View and restore previous versions of your content.
+                </DialogDescription>
               </DialogHeader>
               <ContentVersions contentId={contentId} />
             </DialogContent>

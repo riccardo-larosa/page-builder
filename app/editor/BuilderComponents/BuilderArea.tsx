@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { Component } from '../Components';
-import { TrashIcon, ComputerDesktopIcon, DeviceTabletIcon, DevicePhoneMobileIcon } from '@heroicons/react/24/outline'; // Make sure to install @heroicons/react
+import { Trash, Monitor, Tablet, Smartphone } from "lucide-react"
 
 interface BuilderAreaProps {
   components: Array<{ type: string; props: any }>;
@@ -52,21 +52,21 @@ const BuilderArea: React.FC<BuilderAreaProps> = ({
             className={`p-1.5 rounded ${viewport === 'desktop' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'}`}
             title="Desktop view"
           >
-            <ComputerDesktopIcon className="h-5 w-5" />
+            <Monitor className="h-5 w-5" />
           </button>
           <button
             onClick={() => setViewport('tablet')}
             className={`p-1.5 rounded ${viewport === 'tablet' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'}`}
             title="Tablet view"
           >
-            <DeviceTabletIcon className="h-5 w-5" />
+            <Tablet className="h-5 w-5" />
           </button>
           <button
             onClick={() => setViewport('mobile')}
             className={`p-1.5 rounded ${viewport === 'mobile' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'}`}
             title="Mobile view"
           >
-            <DevicePhoneMobileIcon className="h-5 w-5" />
+            <Smartphone className="h-5 w-5" />
           </button>
         </div>
       </div>
@@ -106,7 +106,7 @@ const BuilderArea: React.FC<BuilderAreaProps> = ({
                     onClick={(e) => handleDeleteComponent(index, e)} 
                     className="text-white hover:text-red-300 focus:outline-none"
                   >
-                    <TrashIcon className="h-4 w-4" />
+                    <Trash className="h-4 w-4" />
                   </button>
                 </div>
               )}

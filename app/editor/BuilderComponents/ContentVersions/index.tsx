@@ -20,20 +20,27 @@ function ContentVersions({ contentId }: { contentId?: string }) {
   
     return (
       <div className="py-4">
-        {Array.isArray(versions) && versions.map((version) => (
-          <div key={version.id} className="border-b p-4">
+        {Array.isArray(versions) && versions.map((version, index) => (
+          <div 
+            key={version.id} 
+            className={`border-b p-4 ${index === 0 ? 'bg-gray-50' : ''}`}
+          >
             <div className="flex justify-between items-center">
-              <div>
-                <p className="text-sm text-gray-500">
-                  {new Date(version.meta.timestamps.created_at).toLocaleString()}
-                </p>
-              </div>
-              <Button
-                variant="outline"
-                onClick={() => {/* Add restore functionality */}}
-              >
-                Restore
-              </Button>
+              <p className="text-sm text-gray-500">
+                {new Date(version.meta.timestamps.created_at).toLocaleString()}
+              </p>
+              {index === 0 ? (
+                <span className="text-sm font-medium text-gray-600">
+                  Current Version
+                </span>
+              ) : (
+                <Button
+                  variant="outline"
+                  onClick={() => {/* Add restore functionality */}}
+                >
+                  Restore
+                </Button>
+              )}
             </div>
           </div>
         ))}

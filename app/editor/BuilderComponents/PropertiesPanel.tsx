@@ -1,9 +1,12 @@
+'use client';
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Component } from '../Components';
 import Editor from '@monaco-editor/react';
 import { useCompletion } from 'ai/react';
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+
 
 interface PropertiesPanelProps {
   selectedComponent: { type: string; props: any } | null;
@@ -21,7 +24,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
     return (
       <div className="w-64 bg-gray-100 p-4">
         <h2 className="text-lg font-bold mb-4">Properties</h2>
-        <p>No component selected</p>
+        <p className="text-gray-500">Select a component to edit its properties</p>
       </div>
     );
   }
@@ -79,15 +82,17 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
   const handleEditorDidMount = (editor: any) => {
     console.log('editor', editor);
     editorRef.current = editor;
-    updateEditorHeight();
+    if (editor?.getModel()) {
+      updateEditorHeight();
+    }
   };
 
   const updateEditorHeight = () => {
-    if (editorRef.current) {
-      const lineHeight = 20; // Approximate line height in pixels
+    if (editorRef.current?.getModel()) {
+      const lineHeight = 20;
       const lineCount = editorRef.current.getModel().getLineCount();
-      const padding = 200; // Additional padding
-      const minHeight = 200; // Minimum height (~10 lines)
+      const padding = 200;
+      const minHeight = 200;
       const newHeight = Math.max(minHeight, (lineCount * lineHeight) + padding);
       setEditorHeight(`${newHeight}px`);
     }
@@ -95,7 +100,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 
   // Update height on initial content
   useEffect(() => {
-    if (editorRef.current) {
+    if (editorRef.current?.getModel()) {
       updateEditorHeight();
     }
   }, []);
