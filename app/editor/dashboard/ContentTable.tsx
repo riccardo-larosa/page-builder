@@ -15,7 +15,7 @@ const ContentTable: React.FC<ContentTableProps> = ({ items, onRefresh }) => {
   const { toast } = useToast();
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  console.log('data', items);
+  //console.log('data', items);
   const onDelete = async (contentId: string) => {
     try {
       setDeletingId(contentId);

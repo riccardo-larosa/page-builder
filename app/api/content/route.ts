@@ -84,17 +84,35 @@ export async function GET(request: NextRequest) {
     return Response.json(content)
 }
 
+async function createContentVersion(token: string, data: any) {
+    const base_url = process.env.API_BASE_URL;
+    const data_versions = {
+        content_id: data.data.content_id,
+        content: data.data.content,
+        html: data.data.html,
+        type: 'content_version_ext',
+    }
+    const url_str_versions = `${base_url}/v2/extensions/content-versions`;
+    const response_versions = await fetch(url_str_versions, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        },
+        body: JSON.stringify({data: data_versions})
+    });
+    if (!response_versions.ok) {
+        throw new Error(`Error: ${response_versions.statusText}`);
+    }
+    return response_versions;
+}
+
 export async function PUT(request: NextRequest) {
     const data = await request.json();
-    //console.log(`data: ${data.data.id}`);
-    //console.log(JSON.stringify(data));
     const token = await getToken();
-    //console.log(`token: ${token}`);
     const base_url = process.env.API_BASE_URL;
-    //const url_str = `${base_url}/v2/settings/extensions/custom-apis/c122d9e2-94fa-4559-91a9-2634ced36473/entries/${data.data.id}`;
-    // TODO: I think there is a bug in the API, it should be like this:
     const url_str = `${base_url}/v2/extensions/store-content/${data.data.content_id}`;
-    //console.log(`url_str: ${url_str}`);
     const response = await fetch(url_str, {
         method: 'PUT',
         headers: {
@@ -108,7 +126,7 @@ export async function PUT(request: NextRequest) {
         throw new Error(`Error: ${response.status}`);
     }
     const results = await response.json();
-    console.log(results);
+    await createContentVersion(token, data);
     return Response.json(results);
 }
 
@@ -124,12 +142,9 @@ export async function POST(request: NextRequest) {
     }
     //TODO: ask Steve about this
     data.type = 'store_content_ext';
-    console.log('data', JSON.stringify(data));
     const token = await getToken();
-    console.log('token', token);
     const base_url = process.env.API_BASE_URL;
     const url_str = `${base_url}/v2/extensions/store-content`;
-    console.log('url_str', url_str);
     const response = await fetch(url_str, {
         method: 'POST',
         headers: {
@@ -140,22 +155,17 @@ export async function POST(request: NextRequest) {
         body: JSON.stringify({data: data})
     });
     if (!response.ok) {
-        //console.log('response', response);
         throw new Error(`Error: ${response.statusText}`);
     }
     const results = await response.json();
-    console.log(results);
     return Response.json(results);
 }
 
 export async function DELETE(request: NextRequest) {
     const params = request.nextUrl.searchParams;
-    console.log(`params: ${params}`);
     const token = await getToken();
-    console.log('token', token);
     const base_url = process.env.API_BASE_URL;
     const url_str = `${base_url}/v2/extensions/store-content/${params.get('content_id')}`;
-    console.log('url_str', url_str);
     const response = await fetch(url_str, {
         method: 'DELETE',
         headers: {
@@ -165,7 +175,5 @@ export async function DELETE(request: NextRequest) {
     if (!response.ok) {
         throw new Error(`Error: ${response.statusText}`);
     }
-    // const results = await response.json();
-    // console.log(results);
     return Response.json({message: 'Content deleted successfully'});
 }

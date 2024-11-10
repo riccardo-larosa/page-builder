@@ -22,7 +22,5 @@ export default async function DashboardPage() {
     }
   };
 
-  //console.log('contentData', contentData);
-
   return <DashboardClient initialData={contentData} />;
 }
