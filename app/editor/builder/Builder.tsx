@@ -210,6 +210,7 @@ export default function EditorClient( {contentItem}: EditorClientProps ) {
         pageTitle={contentItem.name}
         setPageTitle={setPageTitle}
         onSave={handleSave}
+        contentId={contentItem.content_id}
       />
       <DndContext sensors={sensors} onDragStart={handleDragStart} onDragMove={handleDragMove} onDragEnd={handleDragEnd}>
         <div className="flex">

@@ -4,13 +4,12 @@ export interface ContentItem {
     id: string;
     content_id: string;
     name: string;
-    page: string;
     status: string;
     content: string;
     last_modified_at: string;
 }
 
-async function getToken() {
+export async function getToken() {
 
     const clientid = process.env.CLIENTID; 
     const clientsecret = process.env.CLIENTSECRET;
@@ -32,6 +31,7 @@ async function getToken() {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Accept': 'application/json'
         },
+        cache: 'no-store',
         body: data // Send the form-encoded data in the body
     })
     if (!response.ok) {
