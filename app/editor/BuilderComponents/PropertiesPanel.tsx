@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, memo } from 'react';
 import { Component } from '../Components';
 import Editor from '@monaco-editor/react';
 import { useCompletion } from 'ai/react';
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-
+import { Maximize2, Minimize2 } from 'lucide-react';
+import { cn } from "@/lib/utils";
 
 interface PropertiesPanelProps {
   selectedComponent: { type: string; props: any } | null;
@@ -19,6 +20,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
   componentMap,
   onUpdateComponent
 }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
 
   if (!selectedComponent) {
     return (
@@ -110,9 +112,27 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
   //console.log('selectedComponent', selectedComponent);
 
   return (
-    <div className="w-64 bg-gray-100 p-4">
-      <h2 className="text-lg font-bold mb-4">Properties</h2>
-      <h3 className="text-md font-semibold mb-2">{componentConfig.label || selectedComponent.type}</h3>
+    <div className={cn(
+      "transition-all duration-300 bg-gray-100 p-4 relative",
+      isExpanded ? "w-1/2" : "w-64"
+    )}>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-lg font-bold">Properties</h2>
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="p-1 hover:bg-gray-200 rounded-full"
+          title={isExpanded ? "Collapse panel" : "Expand panel"}
+        >
+          {isExpanded ? (
+            <Minimize2 className="h-4 w-4" />
+          ) : (
+            <Maximize2 className="h-4 w-4" />
+          )}
+        </button>
+      </div>
+      <h3 className="text-md font-semibold mb-2">
+        {componentConfig.label || selectedComponent.type}
+      </h3>
       {Object.entries(fields).map(([key, field]) => (
         <div key={key} className="mb-2">
           <label className="block text-sm font-medium text-gray-700">{field.label || key}</label>

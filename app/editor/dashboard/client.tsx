@@ -27,7 +27,7 @@ function CreateOverlay({ onClose, onSubmit }: {
     try {
       await onSubmit({ content_id, name });
       onClose();
-    } catch (e) {
+    } catch (e: any) {
       setError(e.message);
     } finally {
       setIsLoading(false);
@@ -74,7 +74,7 @@ function CreateOverlay({ onClose, onSubmit }: {
   );
 }
 
-export function DashboardClient({ initialData }) {
+export function DashboardClient({ initialData }: { initialData: any }) {
   const [showCreate, setShowCreate] = useState(false);
   const [data, setData] = useState(initialData);
 

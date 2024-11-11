@@ -1,19 +1,43 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDraggable } from '@dnd-kit/core';
+import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { cn } from "@/lib/utils";
 
 interface ComponentListProps {
   components: string[];
 }
 
 const ComponentList: React.FC<ComponentListProps> = ({ components }) => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
   return (
-    <div className="w-64 bg-gray-100 p-4">
-      <h2 className="text-lg font-bold mb-4">Components</h2>
-      {components.map((component) => (
-        <DraggableComponent key={component} id={component}>
-          {component}
-        </DraggableComponent>
-      ))}
+    <div className={cn(
+      "transition-all duration-300 bg-gray-100 relative",
+      isCollapsed ? "w-12" : "w-64"
+    )}>
+      <button
+        onClick={() => setIsCollapsed(!isCollapsed)}
+        className="absolute -right-3 top-3 p-1 bg-white rounded-full shadow-md hover:bg-gray-50 z-10"
+        title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+      >
+        {isCollapsed ? (
+          <PanelLeftOpen className="h-4 w-4" />
+        ) : (
+          <PanelLeftClose className="h-4 w-4" />
+        )}
+      </button>
+
+      <div className={cn(
+        "p-4 transition-opacity duration-300",
+        isCollapsed ? "invisible" : "visible"
+      )}>
+        <h2 className="text-lg font-bold mb-4">Components</h2>
+        {components.map((component) => (
+          <DraggableComponent key={component} id={component}>
+            {component}
+          </DraggableComponent>
+        ))}
+      </div>
     </div>
   );
 };
