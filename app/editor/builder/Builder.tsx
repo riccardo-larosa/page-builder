@@ -14,6 +14,7 @@ import {
   MouseSensor,
   TouchSensor
 } from '@dnd-kit/core';
+import { useToast } from "@/hooks/use-toast"
 
 import { Text, VerticalSpace, Heading, Hero, Button, CustomHtml, Component } from '../Components';
 import ComponentList from '../BuilderComponents/ComponentList';
@@ -49,6 +50,7 @@ export default function EditorClient( {contentItem}: EditorClientProps ) {
   const [builderComponents, setBuilderComponents] = useState<Array<{ type: string; props: any }>>([]);
   const [selectedComponent, setSelectedComponent] = useState<{ type: string; props: any } | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -173,35 +175,44 @@ export default function EditorClient( {contentItem}: EditorClientProps ) {
 
   // Save the page data to the APIs
   const handleSave = async () => {
-    const pageData = JSON.stringify(builderComponents);
-    let fullHtmlContent = await generateHTML(builderComponents);
+    try {
+      const pageData = JSON.stringify(builderComponents);
+      let fullHtmlContent = await generateHTML(builderComponents);
 
-    console.log('Full HTML content:', fullHtmlContent);
-    // Rest of your save logic...
-    const response = await fetch('/api/content', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      body: JSON.stringify({
-        data: {
-          type: "store_content_ext",
-          id: contentItem.id,
-          content_id: contentItem.content_id,
-          content: pageData,
-          html: fullHtmlContent,
-          name: pageTitle,
-        }
-      }),
-    });
+      const response = await fetch('/api/content', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          data: {
+            type: "store_content_ext",
+            id: contentItem.id,
+            content_id: contentItem.content_id,
+            content: pageData,
+            html: fullHtmlContent,
+            name: pageTitle,
+          }
+        }),
+      });
 
-    if (!response.ok) {
-      throw new Error('Failed to save content');
+      if (!response.ok) {
+        throw new Error('Failed to save content');
+      }
+
+      toast({
+        title: "Success",
+        description: "Page saved successfully",
+        variant: "default",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save page",
+        variant: "destructive",
+      });
     }
-
-    const result = await response.json();
-    console.log('Save result:', result);
   };
 
   return (

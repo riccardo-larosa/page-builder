@@ -21,34 +21,37 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
   onUpdateComponent
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [editorHeight, setEditorHeight] = useState('200px');
+  const editorRef = useRef(null);
 
-  if (!selectedComponent) {
-    return (
-      <div className="w-64 bg-gray-100 p-4">
-        <h2 className="text-lg font-bold mb-4">Properties</h2>
-        <p className="text-gray-500">Select a component to edit its properties</p>
-      </div>
-    );
-  }
-
-  const componentConfig = componentMap[selectedComponent.type];
-  const fields = componentConfig.fields || {};
-
-  const handleChange = (key: string, value: any) => {
-    onUpdateComponent({ ...selectedComponent.props, [key]: value });
-    updateEditorHeight();
-  };
-
-  // GenAI markup generator
   const { completion, complete, input, handleInputChange, isLoading } = useCompletion({
     api: '/api/gen-content',
   });
 
-  //const [generatedContent, setGeneratedContent] = useState('');
-  
+  const updateEditorHeight = () => {
+    if (editorRef.current?.getModel()) {
+      const lineHeight = 20;
+      const lineCount = editorRef.current.getModel().getLineCount();
+      const padding = 200;
+      const minHeight = 200;
+      const newHeight = Math.max(minHeight, (lineCount * lineHeight) + padding);
+      setEditorHeight(`${newHeight}px`);
+      console.log('lineCount', lineCount);
+    }
+    console.log('editorHeight', editorHeight);
+  };
+
+  const handleChange = (key: string, value: any) => {
+    onUpdateComponent({ ...selectedComponent?.props, [key]: value });
+    updateEditorHeight();
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await complete(input);
+  };
 
   const extractHtmlContentStreaming = (content: string) => {
-    // Look for <snippet> open and close tags and return the content inside
     const snippetStartIndex = content.indexOf('<snippet');
     const snippetEndIndex = content.indexOf('</snippet>');
     let markup = "";
@@ -64,22 +67,27 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 
   useEffect(() => {
     if (completion && editorRef.current) {
-      //console.log('completion', completion);
       editorRef.current.getModel().setValue(extractHtmlContentStreaming(completion));
     }
   }, [completion]);
 
+  useEffect(() => {
+    if (editorRef.current?.getModel()) {
+      updateEditorHeight();
+    }
+  }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    //setGeneratedContent('');
-    //setRenderedHtml('');
-    await complete(input);
-  };
+  if (!selectedComponent) {
+    return (
+      <div className="w-64 bg-gray-100 p-4">
+        <h2 className="text-lg font-bold mb-4">Properties</h2>
+        <p className="text-gray-500">Select a component to edit its properties</p>
+      </div>
+    );
+  }
 
-  // HTML Editor height functionality
-  const [editorHeight, setEditorHeight] = useState('200px'); // Initial height for ~10 lines
-  const editorRef = useRef(null);
+  const componentConfig = componentMap[selectedComponent.type];
+  const fields = componentConfig.fields || {};
 
   const handleEditorDidMount = (editor: any) => {
     console.log('editor', editor);
@@ -88,28 +96,6 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
       updateEditorHeight();
     }
   };
-
-  const updateEditorHeight = () => {
-    if (editorRef.current?.getModel()) {
-      const lineHeight = 20;
-      const lineCount = editorRef.current.getModel().getLineCount();
-      const padding = 200;
-      const minHeight = 200;
-      const newHeight = Math.max(minHeight, (lineCount * lineHeight) + padding);
-      setEditorHeight(`${newHeight}px`);
-    }
-  };
-
-  // Update height on initial content
-  useEffect(() => {
-    if (editorRef.current?.getModel()) {
-      updateEditorHeight();
-    }
-  }, []);
-
-  // Debug logs
-  //console.log('fields', fields);
-  //console.log('selectedComponent', selectedComponent);
 
   return (
     <div className={cn(

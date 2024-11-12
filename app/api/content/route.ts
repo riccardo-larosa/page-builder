@@ -84,6 +84,7 @@ export async function GET(request: NextRequest) {
     return Response.json(content)
 }
 
+// create a version every time a PUT is called 
 async function createContentVersion(token: string, data: any) {
     const base_url = process.env.API_BASE_URL;
     const data_versions = {
