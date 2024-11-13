@@ -2,12 +2,13 @@
 
 import React, { useState, useRef, useEffect, memo } from 'react';
 import { Component } from '../Components';
-import Editor from '@monaco-editor/react';
+import { Editor, type Monaco } from '@monaco-editor/react';
 import { useCompletion } from 'ai/react';
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Maximize2, Minimize2 } from 'lucide-react';
 import { cn } from "@/lib/utils";
+import type monaco from 'monaco-editor';
 
 interface PropertiesPanelProps {
   selectedComponent: { type: string; props: any } | null;
@@ -22,16 +23,17 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [editorHeight, setEditorHeight] = useState('200px');
-  const editorRef = useRef(null);
+  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
 
   const { completion, complete, input, handleInputChange, isLoading } = useCompletion({
     api: '/api/gen-content',
   });
 
   const updateEditorHeight = () => {
-    if (editorRef.current?.getModel()) {
+    const model = editorRef.current?.getModel();
+    if (model) {
       const lineHeight = 20;
-      const lineCount = editorRef.current.getModel().getLineCount();
+      const lineCount = model.getLineCount();
       const padding = 200;
       const minHeight = 200;
       const newHeight = Math.max(minHeight, (lineCount * lineHeight) + padding);
@@ -67,7 +69,10 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 
   useEffect(() => {
     if (completion && editorRef.current) {
-      editorRef.current.getModel().setValue(extractHtmlContentStreaming(completion));
+      const model = editorRef.current.getModel();
+      if (model) {
+        model.setValue(extractHtmlContentStreaming(completion));
+      }
     }
   }, [completion]);
 
