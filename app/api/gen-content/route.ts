@@ -45,14 +45,7 @@ export async function POST(request: Request) {
     });
     
     return result.toDataStreamResponse();
-    // const streamResponse = new NextResponse(result.textStream, {
-    //     headers: {
-    //       'Content-Type': 'text/event-stream',
-    //       'Cache-Control': 'no-cache, no-transform',
-    //       'Connection': 'keep-alive',
-    //     },
-    //   });
-    // return streamResponse;
+
   }
 
 
